@@ -1,0 +1,13 @@
+# 游戏原数据（约 67MB，外部导出，不纳入版本控制）
+json/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
