@@ -1,6 +1,6 @@
 # GI-Database-script
 
-把游戏的 JSON 导入本地 MongoDB 的脚本集合。
+把 JSON 导入本地 MongoDB 的脚本集合。
 本仓库不提供 JSON 数据，请前往[仓库](https://github.com/DimbreathBot/AnimeGameData)自行获取。
 
 ## 目录结构
