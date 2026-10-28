@@ -2,10 +2,10 @@ import json
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
-PATH = "FetterInfoExcelConfigData.json"     # 数据文件路径
-MONGO_URI = "mongodb://localhost:27017/"    # MongoDB 连接地址
-DB_NAME = "GI"                              # 数据库名
-COLL_NAME = "fetter_info"                   # 集合名
+PATH = "json/FetterInfoExcelConfigData.json"  # 数据文件路径（相对仓库根目录）
+MONGO_URI = "mongodb://localhost:27017/"      # MongoDB 连接地址
+DB_NAME = "GI"                                # 数据库名
+COLL_NAME = "fetter_info"                     # 集合名
 
 # 混淆字段中判定为 hash 的，需要转字符串
 OBF_HASH = set()

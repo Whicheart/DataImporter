@@ -3,10 +3,10 @@ from collections import defaultdict
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
-PATH = "EquipAffixExcelConfigData.json"     # 数据文件路径
-MONGO_URI = "mongodb://localhost:27017/"    # MongoDB 连接地址
-DB_NAME = "GI"                              # 数据库名
-COLL_NAME = "equip_affix"                   # 集合名
+PATH = "json/EquipAffixExcelConfigData.json"  # 数据文件路径（相对仓库根目录）
+MONGO_URI = "mongodb://localhost:27017/"      # MongoDB 连接地址
+DB_NAME = "GI"                                # 数据库名
+COLL_NAME = "equip_affix"                     # 集合名
 
 
 def is_hash_field(k):

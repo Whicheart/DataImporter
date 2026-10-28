@@ -2,10 +2,10 @@ import json
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
-PATH = "AvatarTraceEffectExcelConfigData.json"  # 数据文件路径
-MONGO_URI = "mongodb://localhost:27017/"  # MongoDB 连接地址
-DB_NAME = "GI"  # 数据库名
-COLL_NAME = "avatar_trace_effect"  # 集合名
+PATH = "json/AvatarTraceEffectExcelConfigData.json"  # 数据文件路径（相对仓库根目录）
+MONGO_URI = "mongodb://localhost:27017/"             # MongoDB 连接地址
+DB_NAME = "GI"                                       # 数据库名
+COLL_NAME = "avatar_trace_effect"                    # 集合名
 
 # 混淆字段没有哈希，全是普通 ID 或特效路径，所以留空
 OBF_HASH = set()

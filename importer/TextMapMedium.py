@@ -3,8 +3,9 @@ import os
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
-MONGO_URI = "mongodb://localhost:27017/"   # MongoDB 连接地址
-DB_NAME = "GI"                             # 数据库名
+MONGO_URI = "mongodb://localhost:27017/"  # MongoDB 连接地址
+DB_NAME = "GI"                            # 数据库名
+DATA_DIR = "json"                         # 数据文件目录（相对仓库根目录）
 
 # 文本表文件名（去掉 .json）→ 集合名
 COLL_MAP = {
@@ -19,9 +20,9 @@ def collection_name(input_file):
 
 def choose_json_file():
     """列出当前目录下的 .json 文件，让用户选序号或输入文件名"""
-    files = sorted(f for f in os.listdir(".") if f.lower().endswith(".json") and not f.endswith("_array.json"))
+    files = sorted(f for f in os.listdir(DATA_DIR) if f.lower().endswith(".json") and not f.endswith("_array.json"))
     if not files:
-        print("当前目录下没有找到可用的 .json 文件")
+        print(f"{DATA_DIR}/ 下没有找到可用的 .json 文件")
         raise SystemExit(1)
 
     print("可选的 JSON 文件：")
@@ -33,10 +34,10 @@ def choose_json_file():
         if raw.isdigit():
             idx = int(raw) - 1
             if 0 <= idx < len(files):
-                return files[idx]
+                return os.path.join(DATA_DIR, files[idx])
             print("序号越界，请重新输入")
         elif raw in files:
-            return raw
+            return os.path.join(DATA_DIR, raw)
         else:
             print("无效输入，请重新输入")
 

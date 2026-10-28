@@ -2,7 +2,7 @@ import json
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
-PATH = "MaterialExcelConfigData.json"       # 数据文件路径
+PATH = "json/MaterialExcelConfigData.json"  # 数据文件路径（相对仓库根目录）
 MONGO_URI = "mongodb://localhost:27017/"    # MongoDB 连接地址
 DB_NAME = "GI"                              # 数据库名
 COLL_NAME = "material"                      # 集合名（严格按文件名）

@@ -9,10 +9,12 @@
 .
 ├── importer/                       # 导入脚本
 │   ├── AvatarExcelConfigData.py    # 一个源文件对应一个脚本
+│   ├── WeaponStory.py              # 武器故事文本导入
 │   └── ...
 ├── tool/                           # 一些辅助脚本
 ├── 导入角色能力.py                  # 暂勿使用，无视即可
 ├── json/                           # 源数据
+├── weapon story/                   # 武器故事文本（源数据）
 └── README.md
 ```
 
@@ -31,20 +33,18 @@ pip install pymongo
 
 ## 运行
 
-在 `json/` 目录下运行脚本，脚本会自动 `drop` 并重建目标集合。
+脚本里的 `PATH` 指向 `json/xxx.json`（相对仓库根目录），**在仓库根目录运行**即可，脚本会自动 `drop` 并重建目标集合。
 
 单个：
 
 ```bash
-cd json
-python ../importer/AvatarExcelConfigData.py
+python importer/AvatarExcelConfigData.py
 ```
 
 其余脚本可以使用如下命令全部运行 (除文本表脚本外)：
 
 ```bash
-cd json
-for f in ../importer/*.py; do
+for f in importer/*.py; do
   name=$(basename "$f")
   [ "$name" = "TextMapMedium.py" ] && continue
   echo "==> $name"
@@ -70,6 +70,7 @@ done
 | `AvatarSkillExcelConfigData.py`         | `AvatarSkillExcelConfigData.json`         | `avatar_skill`          | `_id = id`                                        |
 | `AvatarTalentExcelConfigData.py`        | `AvatarTalentExcelConfigData.json`        | `avatar_talent`         | `_id = talentId`                                  |
 | `AvatarTraceEffectExcelConfigData.py`   | `AvatarTraceEffectExcelConfigData.json`   | `avatar_trace_effect`   | `_id = avatarId`，跳过 `JLNHLCPGJBN`              |
+| `EquipAffixExcelConfigData.py` | `EquipAffixExcelConfigData.json` | `equip_affix` | `_id = id`，缺 `level` 补 0，各档放进 `levels` 数组 |
 | `FetterCharacterCardExcelConfigData.py` | `FetterCharacterCardExcelConfigData.json` | `fetter_character_card` | 不设 `_id`（ObjectId）                            |
 | `FetterInfoExcelConfigData.py`          | `FetterInfoExcelConfigData.json`          | `fetter_info`           | `_id = avatarId`，3 个字段改名                    |
 | `FetterStoryExcelConfigData.py`         | `FetterStoryExcelConfigData.json`         | `fetter_story`          | 不设 `_id`                                        |
@@ -78,7 +79,13 @@ done
 | `MaterialExcelConfigData.py`            | `MaterialExcelConfigData.json`            | `material`              | `_id = id`，2 个字段改名                          |
 | `MaterialSourceDataExcelConfigData.py`  | `MaterialSourceDataExcelConfigData.json`  | `material_source_data`  | `_id = id`，`HNNPIIJLLEK → sourceList`            |
 | `ProudSkillExcelConfigData.py`          | `ProudSkillExcelConfigData.json`          | `proud_skill`           | `_id = proudSkillId`，2 个字段改名                |
-| `TextMapMedium.py`                      | `TextMap_MediumCHS.json`                  | `text_map_chs_medium`   | 交互输入文件名；先写 `*_array.json` 再入库        |
+| `TextMapMedium.py`                      | `TextMap_MediumCHS.json`                  | `text_map_chs_medium`   | 交互选择 `json/` 下的文件；先写 `*_array.json` 再入库 |
+| `WeaponExcelConfigData.py` | `WeaponExcelConfigData.json` | `weapon` | `_id = id` |
+| `WeaponLevelExcelConfigData.py` | `WeaponLevelExcelConfigData.json` | `weapon_level` | `_id = level` |
+| `WeaponPromoteExcelConfigData.py` | `WeaponPromoteExcelConfigData.json` | `weapon_promote` | 按 `weaponPromoteId` 合并，缺 `promoteLevel` 补 0 |
+| `WeaponCurveExcelConfigData.py` | `WeaponCurveExcelConfigData.json` | `weapon_curve` | `_id = level`，`curveInfos` 拍平成 `curves` |
+| `WeaponCodexExcelConfigData.py` | `WeaponCodexExcelConfigData.json` | `weapon_codex` | `_id = id` |
+| `WeaponStory.py` | `weapon story/Weapon<id>[_x].txt` | `weapon_story` | `_id = <id>`，`stories` 是各篇的行数组 |
 
 ## 字段处理约定
 
@@ -108,7 +115,8 @@ done
 
 - **`TextMapMedium.py` 是交互式的**：要手动输入文件名，不能直接纳入上面的 `for` 循环。
 - **文本表覆盖率并非全部**：部分集合中的大部分哈希字段无法在 `text_map_chs_medium` 中查到是正常现象。
+- **`WeaponStory.py`** 读的是 `weapon story/` 里的 txt：一行一个字符串存进 `stories`；首行空行会被去掉；整篇为空时用「……」占位；`Weapon<id>.txt` 排在第一位，`_1`、`_2` 等变体依次排在后面。
 
 ## 版本控制
 
-`.gitignore` 忽略 `json/`、`__pycache__/`、编辑器目录。
+`.gitignore` 忽略 `json/`、`weapon story/`、`__pycache__/`、编辑器目录。

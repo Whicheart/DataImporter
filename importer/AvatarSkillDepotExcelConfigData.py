@@ -2,10 +2,10 @@ import json
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
-PATH = "AvatarSkillDepotExcelConfigData.json"   # 数据文件路径
-MONGO_URI = "mongodb://localhost:27017/"         # MongoDB 连接地址
-DB_NAME = "GI"                                   # 数据库名
-COLL_NAME = "avatar_skill_depot"                 # 集合名（想跟 raw_avatar_excel 风格统一可改 raw_skill_depot）
+PATH = "json/AvatarSkillDepotExcelConfigData.json"  # 数据文件路径（相对仓库根目录）
+MONGO_URI = "mongodb://localhost:27017/"            # MongoDB 连接地址
+DB_NAME = "GI"                                      # 数据库名
+COLL_NAME = "avatar_skill_depot"                    # 集合名（想跟 raw_avatar_excel 风格统一可改 raw_skill_depot）
 
 RENAME_MAP = {
     "LLEFDMDOMGG": "proudSkillGroups",
