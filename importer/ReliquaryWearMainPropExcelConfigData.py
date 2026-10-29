@@ -9,7 +9,7 @@ COLL_NAME = "reliquary_wear_main_prop"                   # 集合名
 
 # 混淆字段 → 明文
 RENAME_MAP = {
-    "DFGOJJFJODK": "mainPorpId",
+    "DFGOJJFJODK": "mainPropId",
 }
 
 

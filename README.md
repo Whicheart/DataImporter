@@ -10,9 +10,9 @@
 ├── importer/                       # 导入脚本
 │   ├── AvatarExcelConfigData.py    # 一个源文件对应一个脚本
 │   ├── WeaponStory.py              # 武器故事文本导入
+│   ├── 导入角色能力.py              # 暂勿使用，无视即可
 │   └── ...
 ├── tool/                           # 一些辅助脚本
-├── 导入角色能力.py                  # 暂勿使用，无视即可
 ├── json/                           # 源数据
 ├── weapon story/                   # 武器故事文本（源数据）
 └── README.md
@@ -79,6 +79,15 @@ done
 | `MaterialExcelConfigData.py`            | `MaterialExcelConfigData.json`            | `material`              | `_id = id`，2 个字段改名                          |
 | `MaterialSourceDataExcelConfigData.py`  | `MaterialSourceDataExcelConfigData.json`  | `material_source_data`  | `_id = id`，`HNNPIIJLLEK → sourceList`            |
 | `ProudSkillExcelConfigData.py`          | `ProudSkillExcelConfigData.json`          | `proud_skill`           | `_id = proudSkillId`，2 个字段改名                |
+| `ReliquaryExcelConfigData.py` | `ReliquaryExcelConfigData.json` | `reliquary` | `_id = id` |
+| `ReliquaryAffixExcelConfigData.py` | `ReliquaryAffixExcelConfigData.json` | `reliquary_affix` | `_id = id` |
+| `ReliquaryCodexExcelConfigData.py` | `ReliquaryCodexExcelConfigData.json` | `reliquary_codex` | `_id = id` |
+| `ReliquaryLevelExcelConfigData.py` | `ReliquaryLevelExcelConfigData.json` | `reliquary_level` | 按 `rank` 合并，`addProps` 的 `GGKIEIJLCJJ → value` |
+| `ReliquaryAffixNormalizedParamExcelConfigData.py` | `ReliquaryAffixNormalizedParamExcelConfigData.json` | `reliquary_affix_normalized_param` | `_id = id`，`NDDNDHEELMC → propType` |
+| `ReliquaryMainPropExcelConfigData.py` | `ReliquaryMainPropExcelConfigData.json` | `reliquary_main_prop` | `_id = id` |
+| `ReliquarySetExcelConfigData.py` | `ReliquarySetExcelConfigData.json` | `reliquary_set` | `_id = setId`，`LAJGLFNPLCP → maxRankLevel` |
+| `ReliquaryWearMainPropExcelConfigData.py` | `ReliquaryWearMainPropExcelConfigData.json` | `reliquary_wear_main_prop` | 不设 `_id`，`DFGOJJFJODK → mainPropId` |
+| `ReliquaryWearAppendPropExcelConfigData.py` | `ReliquaryWearAppendPropExcelConfigData.json` | `reliquary_wear_append_prop` | 不设 `_id`，`DOLNLGCNGIA → appendPropId` |
 | `TextMapMedium.py`                      | `TextMap_MediumCHS.json`                  | `text_map_chs_medium`   | 交互选择 `json/` 下的文件；先写 `*_array.json` 再入库 |
 | `WeaponExcelConfigData.py` | `WeaponExcelConfigData.json` | `weapon` | `_id = id` |
 | `WeaponLevelExcelConfigData.py` | `WeaponLevelExcelConfigData.json` | `weapon_level` | `_id = level` |
@@ -106,8 +115,12 @@ done
 | `avatar_skill_depot`                              | `LLEFDMDOMGG` / `KDCMKCFKPBL` / `PEAOICMBMKH` | `proudSkillGroups` / `specialProudSkillGroups` / `arkheType`                               |
 | `avatar_skill_depot`（`proudSkillGroups` 元素内） | `DHIEHDPAFGI`                                 | `unlockPromoteLevel`                                                                       |
 | `fetter_info`                                     | `LCHFJFOMFGA` / `AAEINBDNBHL` / `PNIAJCCODBA` | `avatarPowerBeforTextMapHash` / `avatarPowerAfterTextMapHash` / `avatarNative2TextMapHash` |
+| `reliquary_affix_normalized_param`                | `NDDNDHEELMC`                                 | `propType`                                                                                 |
+| `reliquary_set`                                   | `LAJGLFNPLCP`                                 | `maxRankLevel`                                                                             |
+| `reliquary_wear_main_prop`                        | `DFGOJJFJODK`                                 | `mainPropId`                                                                               |
+| `reliquary_wear_append_prop`                      | `DOLNLGCNGIA`                                 | `appendPropId`                                                                             |
 
-4. `addProps` 数组元素里的 `GGKIEIJLCJJ` 改成 `value`（`avatar_promote` / `avatar_talent` / `proud_skill`）。
+4. `addProps` 数组元素里的 `GGKIEIJLCJJ` 改成 `value`（`avatar_promote` / `avatar_talent` / `proud_skill` / `equip_affix` / `weapon_promote` / `reliquary_level`）。
 
 5. 并非所有混淆字段都要改名。`avatar` 的 `OBF_HASH` 白名单、`avatar_costume`、`avatar_trace_effect`、`material_source_data` 等集合里，部分字段按原样保留（只是值统一 `str()`）。
 
@@ -116,6 +129,7 @@ done
 - **`TextMapMedium.py` 是交互式的**：要手动输入文件名，不能直接纳入上面的 `for` 循环。
 - **文本表覆盖率并非全部**：部分集合中的大部分哈希字段无法在 `text_map_chs_medium` 中查到是正常现象。
 - **`WeaponStory.py`** 读的是 `weapon story/` 里的 txt：一行一个字符串存进 `stories`；首行空行会被去掉；整篇为空时用「……」占位；`Weapon<id>.txt` 排在第一位，`_1`、`_2` 等变体依次排在后面。
+- **`reliquary_wear_main_prop` / `reliquary_wear_append_prop` 没有主键**：源数据里只有 `equipType` 之类的分组字段，`_id` 交给 MongoDB 生成，所以每次重跑（`drop` 后重插）`_id` 都会变。
 
 ## 版本控制
 
