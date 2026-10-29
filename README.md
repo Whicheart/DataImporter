@@ -10,11 +10,13 @@
 ├── importer/                       # 导入脚本
 │   ├── AvatarExcelConfigData.py    # 一个源文件对应一个脚本
 │   ├── WeaponStory.py              # 武器故事文本导入
+│   ├── ReliquaryStory.py           # 圣遗物故事文本导入
 │   ├── 导入角色能力.py              # 暂勿使用，无视即可
 │   └── ...
 ├── tool/                           # 一些辅助脚本
 ├── json/                           # 源数据
 ├── weapon story/                   # 武器故事文本（源数据）
+├── reliquary story/                # 圣遗物故事文本（源数据）
 └── README.md
 ```
 
@@ -88,6 +90,7 @@ done
 | `ReliquarySetExcelConfigData.py` | `ReliquarySetExcelConfigData.json` | `reliquary_set` | `_id = setId`，`LAJGLFNPLCP → maxRankLevel` |
 | `ReliquaryWearMainPropExcelConfigData.py` | `ReliquaryWearMainPropExcelConfigData.json` | `reliquary_wear_main_prop` | 不设 `_id`，`DFGOJJFJODK → mainPropId` |
 | `ReliquaryWearAppendPropExcelConfigData.py` | `ReliquaryWearAppendPropExcelConfigData.json` | `reliquary_wear_append_prop` | 不设 `_id`，`DOLNLGCNGIA → appendPropId` |
+| `ReliquaryStory.py` | `reliquary story/Relic<id>_<x>.txt` | `reliquary_story` | `_id = <id>`，`stories[x-1]` 是第 x 篇的行数组，首行空行跳过 |
 | `TextMapMedium.py`                      | `TextMap_MediumCHS.json`                  | `text_map_chs_medium`   | 交互选择 `json/` 下的文件；先写 `*_array.json` 再入库 |
 | `WeaponExcelConfigData.py` | `WeaponExcelConfigData.json` | `weapon` | `_id = id` |
 | `WeaponLevelExcelConfigData.py` | `WeaponLevelExcelConfigData.json` | `weapon_level` | `_id = level` |
@@ -129,8 +132,9 @@ done
 - **`TextMapMedium.py` 是交互式的**：要手动输入文件名，不能直接纳入上面的 `for` 循环。
 - **文本表覆盖率并非全部**：部分集合中的大部分哈希字段无法在 `text_map_chs_medium` 中查到是正常现象。
 - **`WeaponStory.py`** 读的是 `weapon story/` 里的 txt：一行一个字符串存进 `stories`；首行空行会被去掉；整篇为空时用「……」占位；`Weapon<id>.txt` 排在第一位，`_1`、`_2` 等变体依次排在后面。
+- **`ReliquaryStory.py`** 读的是 `reliquary story/` 里的 `Relic<id>_<x>.txt`：一行一个字符串存进 `stories[x-1]`；空行保留；首行为空行时跳过；`15009`–`15013` 只有 `_3`，所以 `stories` 只有 1 段。
 - **`reliquary_wear_main_prop` / `reliquary_wear_append_prop` 没有主键**：源数据里只有 `equipType` 之类的分组字段，`_id` 交给 MongoDB 生成，所以每次重跑（`drop` 后重插）`_id` 都会变。
 
 ## 版本控制
 
-`.gitignore` 忽略 `json/`、`weapon story/`、`__pycache__/`、编辑器目录。
+`.gitignore` 忽略 `json/`、`weapon story/`、`reliquary story/`、`__pycache__/`、编辑器目录。

@@ -1,6 +1,7 @@
 # 游戏原数据（约 67MB，外部导出，不纳入版本控制）
 json/
 weapon story/
+reliquary story/
 
 # Python
 __pycache__/
