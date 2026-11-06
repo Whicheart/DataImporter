@@ -10,7 +10,11 @@ COLL_NAME = "avatar"                         # 集合名
 # 混淆字段中判定为 hash 的（值是超 int32 的随机大数），需要转字符串
 OBF_HASH = {
     "ICHCEGHCFJE", "EMIBHJLIOHL", "HMEEJHKDEJJ", "KOKPFLNIEFM",
-    "EFMLCEEECCI", "CGAADDNMGFJ", "BJBLGNLBAGN", "BPBLNOLNBGG", "CJJFONABIEN",}
+    "EFMLCEEECCI", "CGAADDNMGFJ", "BJBLGNLBAGN", "BPBLNOLNBGG", "CJJFONABIEN",
+    # 7.2.0 新增：值均为超 int64 的 uint64 大数，不转字符串 pymongo 会报 OverflowError
+    "POCCNIJNACM", "CHCOOENOOJM", "KADLDGKLEPC", "JMFJLPAFLHD",
+    "ICPNLLMONLJ", "DJMLHCLONAB", "NOGICGMMOME", "NDIMNFEKKIC",
+}
 
 def is_hash_field(k):
     """判断字段是否为 hash：明文名以 Hash 结尾，或属于混淆 hash 白名单"""

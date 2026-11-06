@@ -17,7 +17,10 @@ COLL_NAME = "avatar_costume"                        # 集合名（要统一风�
 #   HJKKNCODEBP / ONKNBEKJPEG  → 布尔值 true
 #   FDBALHEDEDG                → 整数 1, 2, 3
 OBF_HASH = {
-    "BAMFPODFABJ", "ADLCLKDIJLK", "KOKPFLNIEFM", "PPHKABFHIJP",}
+    "BAMFPODFABJ", "ADLCLKDIJLK", "KOKPFLNIEFM", "PPHKABFHIJP",
+    # 7.2.0 新增：值均为超 int64 的 uint64 大数，不转字符串 pymongo 会报 OverflowError
+    "EPCOMPFIIJD", "OGLHALNJKMC", "CHCOOENOOJM", "IEJPKPOHBAE"
+}
 
 def is_hash_field(k):
     """判断字段是否为 hash：明文名以 Hash 结尾，或属于混淆 hash 白名单"""
