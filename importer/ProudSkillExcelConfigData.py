@@ -1,4 +1,5 @@
 import json
+
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
@@ -14,7 +15,6 @@ OBF_HASH = {"LPHAIMKIICF"}
 def is_hash_field(k):
     """判断顶层字段是否为 hash"""
     return k.endswith("Hash") or k in OBF_HASH
-
 
 # ---------- 读取数据 ----------
 with open(PATH, "r", encoding="utf-8") as f:

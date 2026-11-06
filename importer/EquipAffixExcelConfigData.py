@@ -1,5 +1,6 @@
-import json
 from collections import defaultdict
+import json
+
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
@@ -12,7 +13,6 @@ COLL_NAME = "equip_affix"                        # 集合名
 def is_hash_field(k):
     """判断字段是否为 hash：明文名以 Hash 结尾"""
     return k.endswith("Hash")
-
 
 # ---------- 读取数据 ----------
 with open(PATH, "r", encoding="utf-8") as f:

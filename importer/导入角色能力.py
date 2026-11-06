@@ -1,5 +1,6 @@
-import os
 import json
+import os
+
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
@@ -49,7 +50,7 @@ def main():
             continue
 
         filepath = os.path.join(ABILITY_DIR, filename)
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, "r", encoding="utf-8") as f:
             try:
                 data = json.load(f)
                 if isinstance(data, list):

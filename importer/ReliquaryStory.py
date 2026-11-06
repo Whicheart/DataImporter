@@ -13,7 +13,6 @@ COLL_NAME = "reliquary_story"             # 集合名
 # 文件名形如 Relic<id>_<x>.txt，<x> 从 1 开始
 FILE_PATTERN = re.compile(r"^Relic(\d+)_(\d+)\.txt$")
 
-
 # ---------- 读取数据 ----------
 # 按 id 归拢：{id: [(x, 行数组), ...]}
 groups = {}
@@ -40,7 +39,7 @@ for story_id, parts in sorted(groups.items()):
     docs.append({
         "_id": story_id,
         "stories": [lines for _, lines in parts],
-    })
+})
 
 # ---------- 导入 MongoDB ----------
 client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)

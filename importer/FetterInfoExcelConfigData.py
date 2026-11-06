@@ -1,4 +1,5 @@
 import json
+
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
@@ -9,6 +10,7 @@ COLL_NAME = "fetter_info"                        # 集合名
 
 # 混淆字段中判定为 hash 的，需要转字符串
 OBF_HASH = set()
+
 
 def is_hash_field(k):
     """判断字段是否为 hash：明文名以 Hash 结尾，或属于混淆 hash 白名单"""

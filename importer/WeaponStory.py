@@ -1,5 +1,6 @@
 import os
 import re
+
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
@@ -36,7 +37,6 @@ def sort_key(suffix):
     if suffix.isdigit():
         return (1, int(suffix))
     return (2, suffix)
-
 
 # ---------- 读取并按武器 id 归组 ----------
 # groups = {武器 id: [(排序键, 文件路径), ...]}

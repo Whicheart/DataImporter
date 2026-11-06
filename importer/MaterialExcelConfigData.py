@@ -1,4 +1,5 @@
 import json
+
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
@@ -11,6 +12,7 @@ RENAME_MAP = {
     "LDKKLGEEGAP": "filterType",
     "PANBBKJOBOL": "effectType"
 }
+
 
 def is_hash_field(k):
     """判断字段是否为 hash：明文名以 Hash 结尾"""

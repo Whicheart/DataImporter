@@ -1,4 +1,5 @@
 import json
+
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
@@ -13,6 +14,7 @@ RENAME_MAP = {
 }
 
 OBF_HASH = set()
+
 
 def is_hash_field(k):
     """判断字段是否为 hash：明文名以 Hash 结尾，或属于混淆 hash 白名单"""

@@ -1,5 +1,5 @@
-import json
 from collections import defaultdict
+import json
 
 from pymongo import MongoClient
 
@@ -13,7 +13,6 @@ COLL_NAME = "reliquary_level"                        # 集合名
 def is_hash_field(k):
     """判断字段是否为 hash：明文名以 Hash 结尾"""
     return k.endswith("Hash")
-
 
 # ---------- 读取数据 ----------
 with open(PATH, "r", encoding="utf-8") as f:
@@ -54,7 +53,7 @@ docs = [
     {
         "_id": rank,  # 以 rank 作为主键
         "levels": sorted(levels, key=lambda x: x["level"]),
-    }
+}
     for rank, levels in sorted(groups.items())
 ]
 

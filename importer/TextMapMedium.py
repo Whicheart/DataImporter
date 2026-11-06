@@ -1,5 +1,6 @@
 import json
 import os
+
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
@@ -13,10 +14,12 @@ COLL_MAP = {
     "TextMap_MediumEN": "text_map_en_medium",
 }
 
+
 def collection_name(input_file):
     """根据文件名推断目标集合：已知文件走映射表，未知文件用文件名小写兜底"""
     stem = os.path.splitext(os.path.basename(input_file))[0]
     return COLL_MAP.get(stem, stem.lower())
+
 
 def choose_json_file():
     """列出当前目录下的 .json 文件，让用户选序号或输入文件名"""

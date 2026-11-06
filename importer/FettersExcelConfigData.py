@@ -1,4 +1,5 @@
 import json
+
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
@@ -6,6 +7,7 @@ PATH = "../json/FettersExcelConfigData.json"  # 数据文件路径（相对 impo
 MONGO_URI = "mongodb://localhost:27017/"      # MongoDB 连接地址
 DB_NAME = "GI"                                # 数据库名
 COLL_NAME = "fetters"                         # 集合名
+
 
 def is_hash_field(k):
     """判断字段是否为 hash：明文名以 Hash 结尾"""

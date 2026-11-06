@@ -1,4 +1,5 @@
 import json
+
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
@@ -8,6 +9,7 @@ DB_NAME = "GI"                                    # 数据库名
 COLL_NAME = "avatar_skill"                        # 集合名（要跟 raw_avatar_excel 风格统一可改 raw_avatar_skill）
 
 OBF_HASH = set()
+
 
 def is_hash_field(k):
     """判断字段是否为 hash：明文名以 Hash 结尾，或属于混淆 hash 白名单"""
