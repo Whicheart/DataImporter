@@ -2,10 +2,10 @@ import json
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
-PATH = "json/AvatarCostumeExcelConfigData.json"  # 数据文件路径（相对仓库根目录）
-MONGO_URI = "mongodb://localhost:27017/"         # MongoDB 连接地址
-DB_NAME = "GI"                                   # 数据库名
-COLL_NAME = "avatar_costume"                     # 集合名（要统一风格可改 raw_avatar_costume，你自己定）
+PATH = "../json/AvatarCostumeExcelConfigData.json"  # 数据文件路径（相对 importer 目录）
+MONGO_URI = "mongodb://localhost:27017/"            # MongoDB 连接地址
+DB_NAME = "GI"                                      # 数据库名
+COLL_NAME = "avatar_costume"                        # 集合名（要统一风格可改 raw_avatar_costume，你自己定）
 
 # 混淆字段中判定为 hash 的（随机大数），需要转字符串
 # 经字段分析确认：
@@ -17,8 +17,7 @@ COLL_NAME = "avatar_costume"                     # 集合名（要统一风格�
 #   HJKKNCODEBP / ONKNBEKJPEG  → 布尔值 true
 #   FDBALHEDEDG                → 整数 1, 2, 3
 OBF_HASH = {
-    "BAMFPODFABJ", "ADLCLKDIJLK", "KOKPFLNIEFM", "PPHKABFHIJP",
-}
+    "BAMFPODFABJ", "ADLCLKDIJLK", "KOKPFLNIEFM", "PPHKABFHIJP",}
 
 def is_hash_field(k):
     """判断字段是否为 hash：明文名以 Hash 结尾，或属于混淆 hash 白名单"""

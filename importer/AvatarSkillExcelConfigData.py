@@ -2,10 +2,10 @@ import json
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
-PATH = "json/AvatarSkillExcelConfigData.json"  # 数据文件路径（相对仓库根目录）
-MONGO_URI = "mongodb://localhost:27017/"       # MongoDB 连接地址
-DB_NAME = "GI"                                 # 数据库名
-COLL_NAME = "avatar_skill"                     # 集合名（要跟 raw_avatar_excel 风格统一可改 raw_avatar_skill）
+PATH = "../json/AvatarSkillExcelConfigData.json"  # 数据文件路径（相对 importer 目录）
+MONGO_URI = "mongodb://localhost:27017/"          # MongoDB 连接地址
+DB_NAME = "GI"                                    # 数据库名
+COLL_NAME = "avatar_skill"                        # 集合名（要跟 raw_avatar_excel 风格统一可改 raw_avatar_skill）
 
 OBF_HASH = set()
 
@@ -25,7 +25,7 @@ for rec in data:
         if k == "id":                       # 已转 _id，跳过原字段
             continue
 
-        if k == "CJJODEPIILB":
+        if k == "LEFEPLAGMHH":
             k = "descExtraTextMapHash"
 
         new_rec[k] = str(v) if is_hash_field(k) and v is not None else v

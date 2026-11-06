@@ -2,10 +2,10 @@ import json
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
-PATH = "json/AvatarTalentExcelConfigData.json"  # 数据文件路径（相对仓库根目录）
-MONGO_URI = "mongodb://localhost:27017/"        # MongoDB 连接地址
-DB_NAME = "GI"                                  # 数据库名
-COLL_NAME = "avatar_talent"                     # 集合名
+PATH = "../json/AvatarTalentExcelConfigData.json"  # 数据文件路径（相对 importer 目录）
+MONGO_URI = "mongodb://localhost:27017/"           # MongoDB 连接地址
+DB_NAME = "GI"                                     # 数据库名
+COLL_NAME = "avatar_talent"                        # 集合名
 
 # 混淆字段中判定为 hash 的（转字符串防溢出）
 OBF_HASH = set()
@@ -30,7 +30,7 @@ for rec in data:
         if k == "talentId":
             continue
 
-        if k == "CJJODEPIILB":
+        if k == "LEFEPLAGMHH":
             k = "descExtraTextMapHash"
 
         if k == "addProps" and isinstance(v, list):

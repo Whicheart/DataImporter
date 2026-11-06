@@ -5,7 +5,7 @@ import re
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
-DATA_DIR = "reliquary story"              # 数据目录（相对仓库根目录）
+DATA_DIR = "../reliquary story"           # 数据目录（相对 importer 目录）
 MONGO_URI = "mongodb://localhost:27017/"  # MongoDB 连接地址
 DB_NAME = "GI"                            # 数据库名
 COLL_NAME = "reliquary_story"             # 集合名

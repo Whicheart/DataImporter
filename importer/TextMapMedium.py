@@ -5,7 +5,7 @@ from pymongo import MongoClient
 # ---------- 配置 ----------
 MONGO_URI = "mongodb://localhost:27017/"  # MongoDB 连接地址
 DB_NAME = "GI"                            # 数据库名
-DATA_DIR = "json"                         # 数据文件目录（相对仓库根目录）
+DATA_DIR = "../json"                      # 数据文件目录（相对 importer 目录）
 
 # 文本表文件名（去掉 .json）→ 集合名
 COLL_MAP = {

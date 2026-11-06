@@ -3,7 +3,7 @@ import json
 from pymongo import MongoClient
 
 # ---------- 配置 ----------
-ABILITY_DIR = "./AvatarAbilities"
+ABILITY_DIR = "../AvatarAbilities"
 MONGO_URI = "mongodb://localhost:27017/"
 DB_NAME = "GI"
 COLL_NAME = "avatar_ability"
