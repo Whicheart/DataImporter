@@ -1,34 +1,36 @@
-# GI-Database-script
+# DataImporter
 
-把 JSON 导入本地 MongoDB 的脚本集合。
-本仓库不提供 JSON 数据，请前往[上游仓库](https://github.com/DimbreathBot/AnimeGameData)自行获取。
+把原数据导入本地 MongoDB 的脚本集合。
+本仓库不提供数据文件，请前往[上游仓库](https://github.com/DimbreathBot/AnimeGameData)获取，按下文目录结构放置。
 
 ## 目录结构
 
 ```
 .
-├── importer/                       # 39 个导入脚本，一个源文件对应一个
-│   ├── AvatarExcelConfigData.py
-│   ├── WeaponStory.py              # 武器故事文本
-│   ├── ReliquaryStory.py           # 圣遗物故事文本
-│   ├── TextMapMedium.py            # 文本表（交互式）
-│   ├── 导入角色能力.py              # 勿用：先 drop 再读外部目录
-│   └── ...
-├── tool/                           # 辅助脚本（字段分析等）
-├── json/                           # 源数据（不进版本控制）
-├── weapon story/                   # 武器故事文本（源数据）
-├── reliquary story/                # 圣遗物故事文本（源数据）
+├── ExcelBinOutput/
+├── TextMap/
+├── Readable/CHS/
+├── importer/
+│   ├── ExcelConfigDataImporter.py  # 按 SPECS 表导入 Excel 数据
+│   ├── ReadableImporter.py         # 故事文本 → *_story 集合
+│   ├── TextMapImporter.py          # 哈希字典 → text_map_medium_<lang>
+│   └── _common.py                  # 数据清洗、防护机制、文档构建
+├── tool/
+│   └── FieldAnalysis.py            # 字段分析工具
+├── FieldMap.json                   # 混淆字段字典
+├── AnalysisResult.txt              # 由tool/FieldAnalysis.py运行生成
+├── 导入角色能力.py                  # 勿用
 └── README.md
 ```
 
 ## 环境
 
-| 项      | 要求                                                          |
-| ------- | ------------------------------------------------------------- |
-| Python  | 3.10+（开发环境 3.13）                                        |
-| pymongo | 4.x（开发环境 4.19）                                          |
-| MongoDB | 6.x / 7.x / 8.x（开发环境 8.2），`mongodb://localhost:27017/` |
-| 库名    | `GI`（写在各脚本文件头的 `DB_NAME`）                          |
+| 项      | 要求                                          |
+| ------- | --------------------------------------------- |
+| Python  | 3.10+                                         |
+| pymongo | 4.x                                           |
+| MongoDB | 6.x / 7.x / 8.x，`mongodb://localhost:27017/` |
+| 库名    | `GI`                                          |
 
 ```bash
 pip install pymongo
@@ -36,108 +38,107 @@ pip install pymongo
 
 ## 运行
 
-脚本里的数据路径都写成相对 `importer/` 的形式（`../json/xxx.json`、`../weapon story/` 等），所以**先进入 `importer/` 目录**再运行。每个脚本会先 `drop` 再重建目标集合。
-
-单个：
-
 ```bash
 cd importer
-python AvatarExcelConfigData.py
 ```
 
-批量（`TextMapMedium.py` 需要交互、`导入角色能力.py` 勿用，两者跳过）：
+**Excel 数据**
 
 ```bash
-cd importer
-for f in *.py; do
-  case "$f" in TextMapMedium.py|导入角色能力.py) continue ;; esac
-  echo "==> $f"
-  python "$f" || break
-done
+python ExcelConfigDataImporter.py --list                 # 列出全部表、目标集合与主键
+python ExcelConfigDataImporter.py --check --all          # 不连库预检
+python ExcelConfigDataImporter.py --all --dry-run        # 预演全部，只打印条数
+python ExcelConfigDataImporter.py --all                  # 入库
+python ExcelConfigDataImporter.py monster                # 指定单表导入
+python ExcelConfigDataImporter.py --all --skip-pending   # 跳过主键未确认的表
 ```
 
-> `drop + insert_many` 意味着脚本是**幂等**的：重复执行得到同样结果，但会清掉你手工往集合里追加的数据。
+**文本表与故事文本**
 
-## 脚本与集合对照
+```bash
+python TextMapImporter.py     # TextMap/*.json → text_map_medium_<lang>
+python ReadableImporter.py    # Readable/CHS/*.txt → weapon_story / relic_story
+```
 
-| importer 脚本                                     | 源文件                                              | 目标集合                           | 说明                                                |
-| ------------------------------------------------- | --------------------------------------------------- | ---------------------------------- | --------------------------------------------------- |
-| `AttackAttenuationExcelConfigData.py`             | `AttackAttenuationExcelConfigData.json`             | `attack_attenuation`               | `_id = group`                                       |
-| `AvatarExcelConfigData.py`                        | `AvatarExcelConfigData.json`                        | `avatar`                           | `_id = id`，跳过 `ICHCEGHCFJE`                      |
-| `AvatarCodexExcelConfigData.py`                   | `AvatarCodexExcelConfigData.json`                   | `avatar_codex`                     | `_id = avatarId`                                    |
-| `AvatarCostumeExcelConfigData.py`                 | `AvatarCostumeExcelConfigData.json`                 | `avatar_costume`                   | `_id = skinId`                                      |
-| `AvatarCurveExcelConfigData.py`                   | `AvatarCurveExcelConfigData.json`                   | `avatar_curve`                     | `_id = level`，曲线类型取 `GGKIEIJLCJJ`             |
-| `AvatarFettersLevelExcelConfigData.py`            | `AvatarFettersLevelExcelConfigData.json`            | `avatar_fetters_level`             | `_id = fetterLevel`                                 |
-| `AvatarLevelExcelConfigData.py`                   | `AvatarLevelExcelConfigData.json`                   | `avatar_level`                     | `_id = level`                                       |
-| `AvatarPromoteExcelConfigData.py`                 | `AvatarPromoteExcelConfigData.json`                 | `avatar_promote`                   | 按 `avatarPromoteId` 合并，缺 `promoteLevel` 补 0   |
-| `AvatarSkillDepotExcelConfigData.py`              | `AvatarSkillDepotExcelConfigData.json`              | `avatar_skill_depot`               | 3 个字段改名 + 嵌套 `unlockPromoteLevel`            |
-| `AvatarSkillExcelConfigData.py`                   | `AvatarSkillExcelConfigData.json`                   | `avatar_skill`                     | `_id = id`                                          |
-| `AvatarTalentExcelConfigData.py`                  | `AvatarTalentExcelConfigData.json`                  | `avatar_talent`                    | `_id = talentId`                                    |
-| `AvatarTraceEffectExcelConfigData.py`             | `AvatarTraceEffectExcelConfigData.json`             | `avatar_trace_effect`              | `_id = avatarId`，跳过 `JLNHLCPGJBN`                |
-| `EquipAffixExcelConfigData.py`                    | `EquipAffixExcelConfigData.json`                    | `equip_affix`                      | `_id = id`，缺 `level` 补 0，各档放进 `levels`      |
-| `FetterCharacterCardExcelConfigData.py`           | `FetterCharacterCardExcelConfigData.json`           | `fetter_character_card`            | 不设 `_id`（ObjectId）                              |
-| `FetterInfoExcelConfigData.py`                    | `FetterInfoExcelConfigData.json`                    | `fetter_info`                      | `_id = avatarId`，3 个字段改名                      |
-| `FetterStoryExcelConfigData.py`                   | `FetterStoryExcelConfigData.json`                   | `fetter_story`                     | 不设 `_id`                                          |
-| `FettersExcelConfigData.py`                       | `FettersExcelConfigData.json`                       | `fetters`                          | 不设 `_id`，`tips` 元素转字符串                     |
-| `MaterialCodexExcelConfigData.py`                 | `MaterialCodexExcelConfigData.json`                 | `material_codex`                   | `_id = id`                                          |
-| `MaterialExcelConfigData.py`                      | `MaterialExcelConfigData.json`                      | `material`                         | `_id = id`，2 个字段改名                            |
-| `MaterialSourceDataExcelConfigData.py`            | `MaterialSourceDataExcelConfigData.json`            | `material_source_data`             | `_id = id`，`HNNPIIJLLEK → sourceList`              |
-| `ProudSkillExcelConfigData.py`                    | `ProudSkillExcelConfigData.json`                    | `proud_skill`                      | `_id = proudSkillId`，2 个字段改名                  |
-| `ReliquaryExcelConfigData.py`                     | `ReliquaryExcelConfigData.json`                     | `reliquary`                        | `_id = id`                                          |
-| `ReliquaryAffixExcelConfigData.py`                | `ReliquaryAffixExcelConfigData.json`                | `reliquary_affix`                  | `_id = id`                                          |
-| `ReliquaryCodexExcelConfigData.py`                | `ReliquaryCodexExcelConfigData.json`                | `reliquary_codex`                  | `_id = id`                                          |
-| `ReliquaryLevelExcelConfigData.py`                | `ReliquaryLevelExcelConfigData.json`                | `reliquary_level`                  | 按 `rank` 合并，`addProps` 的 `GGKIEIJLCJJ → value` |
-| `ReliquaryAffixNormalizedParamExcelConfigData.py` | `ReliquaryAffixNormalizedParamExcelConfigData.json` | `reliquary_affix_normalized_param` | `_id = id`，`NDDNDHEELMC → propType`                |
-| `ReliquaryMainPropExcelConfigData.py`             | `ReliquaryMainPropExcelConfigData.json`             | `reliquary_main_prop`              | `_id = id`                                          |
-| `ReliquarySetExcelConfigData.py`                  | `ReliquarySetExcelConfigData.json`                  | `reliquary_set`                    | `_id = setId`，`LAJGLFNPLCP → maxRankLevel`         |
-| `ReliquaryWearMainPropExcelConfigData.py`         | `ReliquaryWearMainPropExcelConfigData.json`         | `reliquary_wear_main_prop`         | 不设 `_id`，`DFGOJJFJODK → mainPropId`              |
-| `ReliquaryWearAppendPropExcelConfigData.py`       | `ReliquaryWearAppendPropExcelConfigData.json`       | `reliquary_wear_append_prop`       | 不设 `_id`，`DOLNLGCNGIA → appendPropId`            |
-| `ReliquaryStory.py`                               | `reliquary story/Relic<id>_<x>.txt`                 | `reliquary_story`                  | `_id = <id>`，`stories[x-1]` 是第 x 篇的行数组      |
-| `TextMapMedium.py`                                | `TextMap_MediumCHS/EN.json`                         | `text_map_chs_medium` 等           | 交互选择文件；先写 `*_array.json` 再入库            |
-| `WeaponExcelConfigData.py`                        | `WeaponExcelConfigData.json`                        | `weapon`                           | `_id = id`                                          |
-| `WeaponLevelExcelConfigData.py`                   | `WeaponLevelExcelConfigData.json`                   | `weapon_level`                     | `_id = level`                                       |
-| `WeaponPromoteExcelConfigData.py`                 | `WeaponPromoteExcelConfigData.json`                 | `weapon_promote`                   | 按 `weaponPromoteId` 合并，缺 `promoteLevel` 补 0   |
-| `WeaponCurveExcelConfigData.py`                   | `WeaponCurveExcelConfigData.json`                   | `weapon_curve`                     | `_id = level`，`curveInfos` 拍平成 `curves`         |
-| `WeaponCodexExcelConfigData.py`                   | `WeaponCodexExcelConfigData.json`                   | `weapon_codex`                     | `_id = id`                                          |
-| `WeaponStory.py`                                  | `weapon story/Weapon<id>[_x].txt`                   | `weapon_story`                     | `_id = <id>`，`stories` 是各篇的行数组              |
+> 所有导入都是**幂等**的 `drop + insert_many`。
 
-## 字段处理约定
+## 字段映射：FieldMap.json
 
-所有脚本共享同一套清洗规则。
+`FieldMap.json` 是一个 `{混淆字段: 明文}` 的扁平字典，按明文的写法分四类：
 
-1. 大多数脚本把源记录的某个 `id` 类字段提升为 `_id` 并保留（等于没有 `id` 字段）。少数集合不设 `_id`，交给 MongoDB 生成 ObjectId：`fetters`、`fetter_story`、`fetter_character_card`、`reliquary_wear_main_prop`、`reliquary_wear_append_prop`。
+| 写法                 | 含义                     |
+| -------------------- | ------------------------ |
+| 与混淆字段相同       | 不改名，原样入库         |
+| 空字符串             | 该字段直接丢弃           |
+| `aaaaTextMapHash` 等 | 用于保留类型语义的占位名 |
+| 真实明文名           | 明文                     |
 
-2. 源数据中 `*Hash` 结尾的字段（`nameTextMapHash`、`descTextMapHash`…）是 64 位整数，统一 `str()` 后入库，避免精度/类型问题。超过 int64 的混淆字段（如 `POCCNIJNACM`、`EPCOMPFIIJD`）同样按白名单转字符串，否则 pymongo 会报 `OverflowError`。
+## 预检
 
-**3. 混淆字段改名**
+`ExcelConfigDataImporter.py` 在 `drop` 之前先跑完以下检查，任何一道不过就整体退出，以此保护库中的原数据：
 
-| 集合                                              | 原字段                                        | 新字段                                                                                     |
-| ------------------------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `avatar_skill`、`avatar_talent`、`proud_skill`    | `CJJODEPIILB`                                 | `descExtraTextMapHash`                                                                     |
-| `proud_skill`                                     | `NAOILGGDLNA`                                 | `loreDescTextMapHash`                                                                      |
-| `material`                                        | `LDKKLGEEGAP` / `PANBBKJOBOL`                 | `filterType` / `effectType`                                                                |
-| `material_source_data`                            | `HNNPIIJLLEK`                                 | `sourceList`                                                                               |
-| `avatar_skill_depot`                              | `LLEFDMDOMGG` / `KDCMKCFKPBL` / `PEAOICMBMKH` | `proudSkillGroups` / `specialProudSkillGroups` / `arkheType`                               |
-| `avatar_skill_depot`（`proudSkillGroups` 元素内） | `DHIEHDPAFGI`                                 | `unlockPromoteLevel`                                                                       |
-| `fetter_info`                                     | `LCHFJFOMFGA` / `AAEINBDNBHL` / `PNIAJCCODBA` | `avatarPowerBeforTextMapHash` / `avatarPowerAfterTextMapHash` / `avatarNative2TextMapHash` |
-| `reliquary_affix_normalized_param`                | `NDDNDHEELMC`                                 | `propType`                                                                                 |
-| `reliquary_set`                                   | `LAJGLFNPLCP`                                 | `maxRankLevel`                                                                             |
-| `reliquary_wear_main_prop`                        | `DFGOJJFJODK`                                 | `mainPropId`                                                                               |
-| `reliquary_wear_append_prop`                      | `DOLNLGCNGIA`                                 | `appendPropId`                                                                             |
+1. 文件存在且能解析；
+2. 混淆字典对混淆字段的覆盖率必须 100%；
+3. 哈希字段必须被命名或登记；
+4. 主键/分组键必须存在。
 
-4. `addProps` 数组元素里的 `GGKIEIJLCJJ` 改成 `value`（`avatar_promote` / `avatar_talent` / `proud_skill` / `equip_affix` / `weapon_promote` / `reliquary_level`）。
+## 辅助工具
 
-5. 并非所有混淆字段都要改名。`avatar`、`avatar_costume` 的 `OBF_HASH` 白名单、`avatar_trace_effect`、`material_source_data` 等集合里，部分字段按原样保留（只是值统一 `str()`）。
+`tool/FieldAnalysis.py` 用来找出源数据里的混淆字段：
+
+```bash
+python tool/FieldAnalysis.py
+```
+
+选择分析对象后，分析结果会写入仓库根目录的 `AnalysisResult.txt`：每个字段路径给出所属文件/集合、出现次数和 5 个样本，并区分「混淆字段」与「明文字段」。同时生成字典 `FieldMap.json`，把右边的值改成明文名即可；重跑时已填写的值会保留。
 
 ## 注意事项
 
-- **`TextMapMedium.py` 是交互式的**：手动输入文件名，不能直接纳入批量循环。
-- **文本表覆盖率并非全部**：部分集合中的大部分哈希字段在 `text_map_chs_medium` 里查不到，属数据源限制。
-- **`WeaponStory.py`** 读 `weapon story/` 里的 txt：一行一个字符串存进 `stories`；首行空行去掉；整篇为空时用「……」占位；`Weapon<id>.txt` 排第一位，`_1`、`_2` 等变体依次排在后面。
-- **`ReliquaryStory.py`** 读 `reliquary story/` 里的 `Relic<id>_<x>.txt`：一行一个字符串存进 `stories[x-1]`；空行保留；首行为空行时跳过。
-- **`reliquary_wear_main_prop` / `reliquary_wear_append_prop` 没有主键**：每次重跑（`drop` 后重插）`_id` 都会变。
-- **`导入角色能力.py` 勿用**：先 `drop` 再读仓库根目录的 `AvatarAbilities/`，该目录不存在时会把 `avatar_ability` 清空。
+- **哈希字段统一转字符串**：所有 `*Hash` 结尾的字段 `str()` 后入库；`tips`、`textList`、`paramDescList`、`jumpDescs` 四个字段为哈希数组，元素也转字符串。
+- **故事文本**：`ReadableImporter.py` 读 `Readable/CHS/` 下的 `<type><id>[_<idx>].txt`，一行一个字符串，去掉首尾空行、保留行间空行，空文件存成 `[]`；集合名 = `<type>` 小写 + `_story`；同一 id 下无 `idx` 的排最前，其余按 `idx` 升序。
+- **`导入角色能力.py` 勿用**。
 
-## 版本控制
+## 表清单（40 张）
 
-`.gitignore` 忽略 `json/`、`weapon story/`、`reliquary story/`、`__pycache__/` 与编辑器目录。
+| 集合                    | 主键                   | 源文件                                  | 备注                                        |
+| ----------------------- | ---------------------- | --------------------------------------- | ------------------------------------------- |
+| `avatar`                | `id`                   | AvatarExcelConfigData.json              |                                             |
+| `avatar_codex`          | `avatarId`             | AvatarCodexExcelConfigData.json         |                                             |
+| `avatar_costume`        | `skinId`               | AvatarCostumeExcelConfigData.json       |                                             |
+| `avatar_curve`          | `level`                | AvatarCurveExcelConfigData.json         | `curveInfos` 拍平成 `curves`                |
+| `avatar_fetters_level`  | `fetterLevel`          | AvatarFettersLevelExcelConfigData.json  |                                             |
+| `avatar_level`          | `level`                | AvatarLevelExcelConfigData.json         |                                             |
+| `avatar_promote`        | 分组 `avatarPromoteId` | AvatarPromoteExcelConfigData.json       | 缺 `promoteLevel` 补 0                      |
+| `avatar_skill_depot`    | `id`                   | AvatarSkillDepotExcelConfigData.json    |                                             |
+| `avatar_skill`          | `id`                   | AvatarSkillExcelConfigData.json         |                                             |
+| `avatar_talent`         | `talentId`             | AvatarTalentExcelConfigData.json        |                                             |
+| `avatar_trace_effect`   | `avatarId`             | AvatarTraceEffectExcelConfigData.json   |                                             |
+| `avatar_flycloak`       | `id`                   | AvatarFlycloakExcelConfigData.json      | 源字段是混淆名 `FBBOPPGICOK`，映射后即 `id` |
+| `reliquary`             | `id`                   | ReliquaryExcelConfigData.json           |                                             |
+| `reliquary_affix`       | `id`                   | ReliquaryAffixExcelConfigData.json      |                                             |
+| `reliquary_codex`       | `id`                   | ReliquaryCodexExcelConfigData.json      |                                             |
+| `reliquary_level`       | 分组 `rank`            | ReliquaryLevelExcelConfigData.json      | 缺 `rank` 补 0，组内按 `level` 排序         |
+| `reliquary_main_prop`   | `id`                   | ReliquaryMainPropExcelConfigData.json   |                                             |
+| `reliquary_set`         | `setId`                | ReliquarySetExcelConfigData.json        |                                             |
+| `weapon`                | `id`                   | WeaponExcelConfigData.json              |                                             |
+| `weapon_codex`          | `id`                   | WeaponCodexExcelConfigData.json         |                                             |
+| `weapon_curve`          | `level`                | WeaponCurveExcelConfigData.json         | `curveInfos` 拍平成 `curves`                |
+| `weapon_level`          | `level`                | WeaponLevelExcelConfigData.json         |                                             |
+| `weapon_promote`        | 分组 `weaponPromoteId` | WeaponPromoteExcelConfigData.json       | 缺 `promoteLevel` 补 0                      |
+| `equip_affix`           | 分组 `id`              | EquipAffixExcelConfigData.json          | 缺 `level` 补 0，各档放进 `levels`          |
+| `material`              | `id`                   | MaterialExcelConfigData.json            |                                             |
+| `material_codex`        | `id`                   | MaterialCodexExcelConfigData.json       |                                             |
+| `material_source_data`  | `id`                   | MaterialSourceDataExcelConfigData.json  |                                             |
+| `proud_skill`           | `proudSkillId`         | ProudSkillExcelConfigData.json          |                                             |
+| `fetter_info`           | `avatarId`             | FetterInfoExcelConfigData.json          |                                             |
+| `fetters`               | 不设 `_id`             | FettersExcelConfigData.json             |                                             |
+| `fetter_story`          | 不设 `_id`             | FetterStoryExcelConfigData.json         |                                             |
+| `fetter_character_card` | 不设 `_id`             | FetterCharacterCardExcelConfigData.json |                                             |
+| `monster`               | `id`                   | MonsterExcelConfigData.json             |                                             |
+| `monster_affix`         | `id`                   | MonsterAffixExcelConfigData.json        |                                             |
+| `monster_curve`         | `level`                | MonsterCurveExcelConfigData.json        | `curveInfos` 拍平成 `curves`                |
+| `monster_describe`      | `id`                   | MonsterDescribeExcelConfigData.json     |                                             |
+| `monster_multi_player`  | `Id`                   | MonsterMultiPlayerExcelConfigData.json  |                                             |
+| `monster_relationship`  | `id`                   | MonsterRelationshipExcelConfigData.json |                                             |
+| `monster_special_name`  | `specialNameID`        | MonsterSpecialNameExcelConfigData.json  |                                             |
+| `monster_title`         | `titleID`              | MonsterTitleExcelConfigData.json        |                                             |
