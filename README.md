@@ -16,7 +16,8 @@
 │   ├── TextMapImporter.py          # 哈希字典 → text_map_medium_<lang>
 │   └── _common.py                  # 数据清洗、防护机制、文档构建
 ├── tool/
-│   └── FieldAnalysis.py            # 字段分析工具
+│   ├── FieldAnalysis.py            # 字段分析工具
+│   └── FieldList.py                # 字段列表工具
 ├── FieldMap.json                   # 混淆字段字典
 ├── AnalysisResult.txt              # 由tool/FieldAnalysis.py运行生成
 ├── 导入角色能力.py                  # 勿用
@@ -91,6 +92,14 @@ python tool/FieldAnalysis.py
 ```
 
 选择分析对象后，分析结果会写入仓库根目录的 `AnalysisResult.txt`：每个字段路径给出所属文件/集合、出现次数和 5 个样本，并区分「混淆字段」与「明文字段」。同时生成字典 `FieldMap.json`，把右边的值改成明文名即可；重跑时已填写的值会保留。
+
+`tool/FieldList.py` 用来列出单个来源的全部字段路径与类型：
+
+```bash
+python tool/FieldList.py
+```
+
+选择分析对象后，脚本会遍历全部记录，打印每个字段路径、类型、出现次数；同一路径出现多种类型时并列显示并标注。
 
 ## 注意事项
 
