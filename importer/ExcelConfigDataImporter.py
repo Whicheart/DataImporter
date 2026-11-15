@@ -120,6 +120,9 @@ SPECS = [
     Spec("ExcelBinOutput/MonsterSpecialNameExcelConfigData.json", "monster_special_name",
          id_key="specialNameID"),
     Spec("ExcelBinOutput/MonsterTitleExcelConfigData.json", "monster_title", id_key="titleID"),
+
+    # ---------- 新增：动物图鉴 ----------
+    Spec("ExcelBinOutput/AnimalCodexExcelConfigData.json", "animal_codex", id_key="id"),
 ]
 
 
