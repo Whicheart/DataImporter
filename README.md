@@ -13,7 +13,7 @@
 ├── importer/
 │   ├── ExcelConfigDataImporter.py  # 按 SPECS 表导入 Excel 数据
 │   ├── ReadableImporter.py         # 故事文本 → *_story 集合
-│   ├── TextMapImporter.py          # 哈希字典 → text_map_medium_<lang>
+│   ├── TextMapImporter.py          # 哈希字典 → text_map_<lang>[_medium]
 │   └── _common.py                  # 数据清洗、防护机制、文档构建
 ├── tool/
 │   ├── FieldAnalysis.py            # 字段分析工具

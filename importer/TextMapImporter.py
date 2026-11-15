@@ -9,14 +9,29 @@ MONGO_URI = "mongodb://localhost:27017/"            # MongoDB 连接地址
 DB_NAME = "GI"                                      # 数据库名
 TEXTMAP_DIR = "../TextMap"                          # 文本表目录（相对 importer 目录）
 
-# TextMap_Medium<lang>.json → text_map_medium_<lang>
-FILE_PATTERN = re.compile(r"^TextMap_Medium([A-Za-z0-9]+)\.json$")
+# TextMap_Medium<lang>.json → text_map_<lang>_medium
+# TextMap<lang>.json        → text_map_<lang>
+MEDIUM_PATTERN = re.compile(r"^TextMap_Medium([A-Za-z0-9]+)\.json$")
+PLAIN_PATTERN = re.compile(r"^TextMap([A-Za-z0-9]+)\.json$")
+
+
+def match_name(filename):
+    """判断文件名是哪一种文本表，返回 (类型, 语言部分)；不匹配返回 None。"""
+    matched = MEDIUM_PATTERN.match(filename)
+    if matched:
+        return "medium", matched.group(1)
+    matched = PLAIN_PATTERN.match(filename)
+    if matched:
+        return "plain", matched.group(1)
+    return None
 
 
 def collection_name(filename):
-    """由文件名推出目标集合：TextMap_MediumCHS.json → text_map_medium_chs"""
-    lang = FILE_PATTERN.match(filename).group(1)
-    return f"text_map_medium_{lang.lower()}"
+    """由文件名推出目标集合：TextMap_MediumCHS.json → text_map_chs_medium；TextMapCHS.json → text_map_chs"""
+    kind, lang = match_name(filename)
+    if kind == "medium":
+        return f"text_map_{lang.lower()}_medium"
+    return f"text_map_{lang.lower()}"
 
 
 def load_textmap(path):
@@ -30,9 +45,9 @@ def load_textmap(path):
 if not os.path.isdir(TEXTMAP_DIR):
     raise SystemExit(f"找不到文本表目录: {TEXTMAP_DIR}")
 
-files = sorted(f for f in os.listdir(TEXTMAP_DIR) if FILE_PATTERN.match(f))
+files = sorted(f for f in os.listdir(TEXTMAP_DIR) if match_name(f))
 if not files:
-    raise SystemExit(f"{TEXTMAP_DIR}/ 下没有 TextMap_Medium<lang>.json")
+    raise SystemExit(f"{TEXTMAP_DIR}/ 下没有 TextMap_Medium<lang>.json 或 TextMap<lang>.json")
 
 # ---------- 导入 MongoDB ----------
 client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
